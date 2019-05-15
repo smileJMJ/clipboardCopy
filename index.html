@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title></title>
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+</head>
+<body>
+	<div class="copy_area">
+		<button type="button" class="btn_copy" data-copy="false">클립보드 복사</button>
+	</div>
+
+  <div class="copy_area2">
+    <textarea></textarea>
+    <button type="button" class="btn_copy2" data-copy="false">클립보드 복사22</button>
+  </div>
+
+  <script type="text/javascript" src="clipboardCopy.js"></script>
+	<script type="text/javascript">
+		$(function(){
+      clipboardCopy({
+        textareaHidden: true,
+        //textarea: document.createElement('input'),
+        //readonly: ,
+        value: location.href,
+        btnCopy: document.getElementsByClassName('btn_copy')[0]
+        //callback: 
+      });
+
+      clipboardCopy({
+        //textareaHidden: ,
+        textarea: document.getElementsByClassName('copy_area2')[0].children[0],
+        readonly: false,
+        //value: ,
+        btnCopy: document.getElementsByClassName('btn_copy2')[0],
+        callback: function(){console.log('copy')}
+      });
+    });
+	</script>
+</body>
+</html>

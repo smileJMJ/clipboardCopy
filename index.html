@@ -7,13 +7,21 @@
 	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 </head>
 <body>
+  <h2>1. textarea 비노출 - 현재 url 복사</h2>
 	<div class="copy_area">
 		<button type="button" class="btn_copy" data-copy="false">클립보드 복사</button>
 	</div>
 
+  <h2>2. textarea 노출 - 텍스트 영역에 입력한 값 복사</h2>
   <div class="copy_area2">
     <textarea></textarea>
-    <button type="button" class="btn_copy2" data-copy="false">클립보드 복사22</button>
+    <button type="button" class="btn_copy2" data-copy="false">클립보드 복사</button>
+  </div>
+
+  <h2>3. textarea 노출 - 텍스트 영역의 고정값 복사</h2>
+  <div class="copy_area3">
+    <textarea></textarea>
+    <button type="button" class="btn_copy3" data-copy="false">클립보드 복사</button>
   </div>
 
   <script type="text/javascript" src="clipboardCopy.js"></script>
@@ -21,20 +29,29 @@
 		$(function(){
       clipboardCopy({
         textareaHidden: true,
-        //textarea: document.createElement('input'),
-        //readonly: ,
         value: location.href,
-        btnCopy: document.getElementsByClassName('btn_copy')[0]
-        //callback: 
+        btnCopy: document.getElementsByClassName('btn_copy')[0],
+        callback: function(){
+          var btn = document.getElementsByClassName('btn_copy')[0];
+          btn.textContent = '주소가 복사되었습니다.';
+        }
       });
 
       clipboardCopy({
-        //textareaHidden: ,
+        textareaHidden: false,
         textarea: document.getElementsByClassName('copy_area2')[0].children[0],
         readonly: false,
-        //value: ,
         btnCopy: document.getElementsByClassName('btn_copy2')[0],
         callback: function(){console.log('copy')}
+      });
+
+      clipboardCopy({
+        textareaHidden: false,
+        textarea: document.getElementsByClassName('copy_area3')[0].children[0],
+        readonly: true,
+        value: '가나다라마바사',
+        btnCopy: document.getElementsByClassName('btn_copy3')[0],
+        callback: function(){alert('복사되었습니다.');}
       });
     });
 	</script>

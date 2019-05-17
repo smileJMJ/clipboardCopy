@@ -1,36 +1,15 @@
-/*var clipboardCopy = (function(){
-  var $copyArea, $hiddenUrl;
-  var url;
+/*
+  호출코드
+  clipboardCopy({
+    textareaHidden: true/false(default),          // textarea 숨김(동적으로 생성 및 삭제) 여부, true: 숨김(동적생성) / false: 노출(마크업되어있음)
+    textarea: dom object,                         // clipboard로 복사할 텍스트가 담긴 영역, input[type=text]/textarea 등 javascript 객체로
+    readonly: true/false,                         // true: value값이 고정되어 복사됨 / false: textarea에 입력한 값이 복사됨
+    value: string,                                // copy할 value 값
+    btnCopy: dom object,                          // copy 버튼 객체
+    callback: function(){}                        // copy 되면 실행할 콜백
+  });
 
-  init = function(){
-    url = window.location.href;
-    $copyArea = $(".copy_area");
-    $hiddenUrl = document.createElement("input");
-    $hiddenUrl.id = "hidden_url";
-    $hiddenUrl.readonly = true;
-    $hiddenUrl.value = decodeURI(url);
-
-    $(".btn_copy").click(function(e){
-      e.preventDefault();
-
-      var copy = $(this).attr("data-copy");
-      if(copy === "false"){
-        $copyArea.append($hiddenUrl);
-        $hiddenUrl.select();
-        document.execCommand("copy");
-        $copyArea[0].removeChild($hiddenUrl);
-
-        var text = "주소가 복사되었습니다.<br>원하는 곳에 붙여넣기 (Ctrl+V) 해주세요.";
-        $(this).html(text);
-        $(this).attr("data-copy", "true");
-      }
-    });
-  };
-
-  return {
-    init:init
-  }
-})();*/
+ */
 
 var browserDetect = (function() {
     var ua;
@@ -133,7 +112,6 @@ var clipboardCopy = (function() {
     Fn.init = function(opt) {
         var cc;
 
-        //browser = browserDetect.init();
         cc = new CC(opt);
         cc.copy();
     };
@@ -142,45 +120,52 @@ var clipboardCopy = (function() {
         var self = this;
         var textareaHidden = self.textareaHidden,
             textarea = self.textarea,
+            readonly = self.readonly,
             value = self.value,
             btnCopy = self.btnCopy,
             callback = self.callback;
 
-        if (btnCopy === undefined) return;
+        if(btnCopy === undefined) return;
+        if(!textareaHidden && readonly) textarea.readOnly = true;
+        if(!textareaHidden && value !== undefined) textarea.value = value;
 
         btnCopy.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('click');
+          e.preventDefault();
 
-            if (textareaHidden === true && textarea === undefined) { // select 후에 지워줘야 함
-              textarea = self.textarea = btnCopy.parentElement.appendChild(document.createElement('textarea'));
-              textarea.value = value;
-            }
-            selectFunc(textarea);
-            if (callback !== undefined) callback();
+          if(textareaHidden === true) { 
+            textarea = self.textarea = btnCopy.parentElement.appendChild(document.createElement('textarea'));
+            textarea.value = value;
+          }
+          
+          copyFunc(textarea);
+          if(textareaHidden === true) textarea.parentNode.removeChild(textarea);
+          if(callback !== undefined) callback();
         });
     };
 
-    function selectFunc(ta){
-      var browser, phone;
+    function copyFunc(ta){
+      var isIEO, isIOS;
 
-      browser = browserObj['browser'];
-      phone = browserObj['browser'];
+      isIEO = browserObj['browser'].match(/IE_O/i);
+      isIOS = browserObj['phone'].match(/iPad|iPhone/i);
 
-      
-
-      if(browser === 'IE_O'){
-        ta.select();
-        if(window.clipboardData && window.clipboardData.setData){
-          console.log('IE', 'copy');
-          return clipboardData.setData('Text', ta.value);
-        }
-      }else if(browser === 'Safari'){
-
+      if(isIOS !== null){           // ios 일 때
+        var range, selection;
+        range = document.createRange();
+        range.selectNodeContents(ta);
+        selection = window.getSelection();
+        selection.addRange(range);
+        ta.setSelectionRange(0, 9999999);
+        document.execCommand('copy');
       }else{
         ta.select();
-        document.execCommand('copy');
-        console.log(browser, 'copy')
+        if(isIEO !== null){
+          if(window.clipboardData && window.clipboardData.setData){
+            clipboardData.setData('Text', ta.value);
+          }
+        }else{
+          document.execCommand('copy');
+        }
       }
     }
 

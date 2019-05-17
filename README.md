@@ -25,3 +25,4 @@ clipboardCopy({
 - callback: copy 되면 실행할 콜백
 
 # 데모
+https://smilejmj.github.io/clipboardCopy/index.html
